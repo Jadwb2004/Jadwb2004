@@ -1,0 +1,24 @@
+body{
+    background-color: lightgray;
+    color: black;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: small;
+    line-height: 15px;
+    margin: 0;
+}
+
+.contanier{
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+.box{
+    width: 100px;
+    height: 100px;
+}
+#main-header{
+    
+
+    background-color: black;
+    color:white;
+}
