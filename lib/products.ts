@@ -28,6 +28,8 @@ export interface Product {
   reviewCount: number
   image: string
   gallery: string[]
+  /** Editorial product portraits shown in the product-page portrait grid. */
+  editorial: { src: string; alt: string; caption: string }[]
   bestSeller: boolean
   featured?: boolean
   createdOrder: number
@@ -42,10 +44,10 @@ export const products: Product[] = [
     description:
       'A cushioning caviar-enriched cream that deeply hydrates and replenishes essential lipids to lock in firmness and elasticity. Developed with a medical-first approach, it nourishes and stimulates natural cellular renewal for a visibly restored, luminous complexion.',
     concern: 'Fine Lines',
-    concerns: ['Fine Lines', 'Hydration', 'Texture'],
+    concerns: ['Fine Lines', 'Hydration', 'Sensitive Skin', 'Texture'],
     type: 'Cream',
     skinTypes: ['All Skin Types', 'Dry', 'Mature'],
-    keyIngredients: ['Caviar Extract', 'Ceramides', 'Squalane'],
+    keyIngredients: ['Caviar Extract', 'Ceramides', 'Antioxidants'],
     price: 168,
     size: '50ml',
     texture: 'Rich, silken cream that melts into a satin finish',
@@ -58,6 +60,28 @@ export const products: Product[] = [
       '/images/brand/caviar-open-wide.jpeg',
       '/images/brand/caviar-open.jpeg',
       '/images/brand/routine-medical.jpeg',
+    ],
+    editorial: [
+      {
+        src: '/images/brand/cream-editorial-candlelit.jpg',
+        alt: 'Caviar Boosting Cream in a candlelit still life',
+        caption: 'Product portrait · 01',
+      },
+      {
+        src: '/images/brand/cream-editorial-crystal.jpg',
+        alt: 'Caviar Boosting Cream in a crystal editorial setting',
+        caption: 'Product portrait · 02',
+      },
+      {
+        src: '/images/brand/cream-editorial-black-glass.jpg',
+        alt: 'Caviar Boosting Cream on a black glass pedestal',
+        caption: 'Product portrait · 03',
+      },
+      {
+        src: '/images/brand/cream-editorial-garden.jpg',
+        alt: 'Caviar Boosting Cream in a luminous garden setting',
+        caption: 'Product portrait · 04',
+      },
     ],
     bestSeller: true,
     featured: true,
@@ -74,7 +98,7 @@ export const products: Product[] = [
     concerns: ['Hydration', 'Fine Lines', 'Dullness', 'Uneven Tone'],
     type: 'Serum',
     skinTypes: ['All Skin Types', 'Dry', 'Sensitive'],
-    keyIngredients: ['Hyaluronic Acid', 'Niacinamide', 'Vitamin B5'],
+    keyIngredients: ['Caviar Extract', 'Ceramides', 'Squalane'],
     price: 132,
     size: '40ml',
     texture: 'Fluid, water-light serum that melts into skin',
@@ -87,6 +111,28 @@ export const products: Product[] = [
       '/images/brand/serum-warm.jpeg',
       '/images/brand/routine-basics.jpeg',
       '/images/texture.png',
+    ],
+    editorial: [
+      {
+        src: '/images/brand/serum-editorial-amber.jpg',
+        alt: 'Advanced Plumping Serum in an amber still life',
+        caption: 'Product portrait · 01',
+      },
+      {
+        src: '/images/brand/serum-editorial-paris.jpg',
+        alt: 'Advanced Plumping Serum in a Parisian night setting',
+        caption: 'Product portrait · 02',
+      },
+      {
+        src: '/images/brand/serum-editorial-formula.jpg',
+        alt: 'Advanced Plumping Serum in a formula-led studio setting',
+        caption: 'Product portrait · 03',
+      },
+      {
+        src: '/images/brand/serum-editorial-autumn.jpg',
+        alt: 'Advanced Plumping Serum with an autumnal editorial setting',
+        caption: 'Product portrait · 04',
+      },
     ],
     bestSeller: true,
     createdOrder: 3,
