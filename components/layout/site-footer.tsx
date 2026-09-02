@@ -25,10 +25,10 @@ const columns = [
     title: 'Client Services',
     links: [
       { label: 'Contact', href: '/#contact' },
-      { label: 'Shipping & Returns', href: '/#contact' },
-      { label: 'FAQs', href: '/#contact' },
-      { label: 'Privacy', href: '/#contact' },
-      { label: 'Terms', href: '/#contact' },
+      { label: 'Shipping & Returns', href: '/info/shipping' },
+      { label: 'FAQs', href: '/info/faq' },
+      { label: 'Privacy', href: '/info/privacy' },
+      { label: 'Terms', href: '/info/terms' },
     ],
   },
   {
@@ -47,11 +47,11 @@ export function SiteFooter() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4 lg:grid-cols-6">
           <div className="col-span-2 lg:col-span-2">
             <Image
-              src="/images/brand/logo.jpeg"
+              src="/images/brand/logo.png"
               alt="Laboratoire Amorén Paris"
-              width={1300}
-              height={820}
-              className="h-16 w-auto mix-blend-multiply"
+              width={902}
+              height={388}
+              className="h-16 w-auto"
             />
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Parisian Luxury. Medical Expertise. Skincare developed with scientific rigour and the

@@ -7,6 +7,8 @@ import type { Product } from '@/lib/products'
 import { formatPrice } from '@/lib/products'
 import { useCart } from '@/components/cart/cart-provider'
 import { Stars } from '@/components/ui/stars'
+import { ProductViewer } from '@/components/product/product-viewer'
+import type { ProductId } from '@/lib/brand-content'
 
 const accordionData = (product: Product) => [
   {
@@ -195,6 +197,12 @@ export function ProductDetail({ product }: { product: Product }) {
               </div>
             ))}
           </div>
+
+          <ProductViewer
+            productId={product.slug as ProductId}
+            productName={product.name}
+            fallbackImage={product.image}
+          />
         </div>
       </div>
     </div>

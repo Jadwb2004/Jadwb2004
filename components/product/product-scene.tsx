@@ -33,7 +33,7 @@ export function ProductScene({ productId, onReady, onError, resetRef }: ScenePro
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ position: [0, 0.35, 5.6], fov: 28, near: 0.05, far: 60 }}
+      camera={{ position: [0, 0.3, 8.2], fov: 28, near: 0.05, far: 60 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping
@@ -64,8 +64,8 @@ export function ProductScene({ productId, onReady, onError, resetRef }: ScenePro
         enablePan={false}
         enableDamping
         dampingFactor={0.075}
-        minDistance={3.6}
-        maxDistance={8}
+        minDistance={5}
+        maxDistance={11}
         minPolarAngle={Math.PI * 0.22}
         maxPolarAngle={Math.PI * 0.62}
         target={[0, 0, 0]}
@@ -121,8 +121,19 @@ function SerumModel({ onReady, onError }: { onReady: () => void; onError: () => 
       const clone = scene.clone(true)
       const box = new THREE.Box3().setFromObject(clone)
       const size = box.getSize(new THREE.Vector3())
+
+      // A bottle is tallest along one axis; stand it upright on Y regardless
+      // of how the file was exported.
+      const wrapper = new THREE.Group()
+      if (size.z >= size.x && size.z >= size.y) {
+        wrapper.rotation.x = -Math.PI / 2
+      } else if (size.x >= size.y && size.x >= size.z) {
+        wrapper.rotation.z = Math.PI / 2
+      }
+      wrapper.add(clone)
+
       const scale = 3.1 / Math.max(size.x, size.y, size.z)
-      clone.scale.setScalar(scale)
+      wrapper.scale.setScalar(scale)
       clone.traverse((child) => {
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh
@@ -130,7 +141,7 @@ function SerumModel({ onReady, onError }: { onReady: () => void; onError: () => 
           mesh.receiveShadow = true
         }
       })
-      return clone
+      return wrapper
     } catch {
       onError()
       return null

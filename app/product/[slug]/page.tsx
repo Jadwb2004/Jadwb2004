@@ -3,6 +3,15 @@ import type { Metadata } from 'next'
 import { products, getProduct } from '@/lib/products'
 import { ProductDetail } from '@/components/product/product-detail'
 import { ProductCard } from '@/components/product/product-card'
+import { ProductFaq } from '@/components/product/product-faq'
+import {
+  ProductEditorialGallery,
+  ProductEvidence,
+  ProductFormulaProfile,
+  ProductQualityMarks,
+  RitualPairing,
+} from '@/components/product/product-sections'
+import { productFaqs, type ProductId } from '@/lib/brand-content'
 import { Reveal } from '@/components/ui/reveal'
 
 export function generateStaticParams() {
@@ -29,10 +38,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound()
 
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 3)
+  const productId = product.slug as ProductId
+  const partner = products.find((p) => p.slug !== product.slug)
 
   return (
     <div>
       <ProductDetail product={product} />
+      <ProductFormulaProfile productId={productId} product={product} />
+      <ProductEditorialGallery product={product} />
+      <RitualPairing current={product} partner={partner} />
+      <ProductEvidence />
+      <ProductFaq items={productFaqs[productId]} productName={product.name} />
+      <ProductQualityMarks />
 
       {/* Related */}
       <section className="border-t border-border bg-secondary/40 py-16 lg:py-24">
