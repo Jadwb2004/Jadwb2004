@@ -288,10 +288,6 @@ export const infoPages: Record<InfoPageKey, InfoPage> = {
         heading: 'Returns',
         body: 'To request help with a delivery or formula, contact Client Care at hello@amoren.paris with your order reference and clear photos where relevant. Returned product eligibility depends on the formula remaining unopened and in its original condition.',
       },
-      {
-        heading: 'A careful note',
-        body: 'This client-care page should be reviewed and approved by the business owner before publication, particularly for final delivery timing and consumer-law requirements.',
-      },
     ],
   },
   faq: {

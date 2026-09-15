@@ -6,14 +6,16 @@ export function Reveal({
   children,
   className = '',
   delay = 0,
-  as: Tag = 'div',
+  as = 'div',
 }: {
   children: React.ReactNode
   className?: string
   delay?: number
   as?: React.ElementType
 }) {
-  const ref = useRef<HTMLElement | null>(null)
+  // Widen the polymorphic tag so TS doesn't intersect every element's props into `never`.
+  const Tag = as as 'div'
+  const ref = useRef<HTMLDivElement | null>(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
