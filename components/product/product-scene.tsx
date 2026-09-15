@@ -168,44 +168,40 @@ function CreamJar({ onReady }: { onReady: () => void }) {
   return (
     <Center>
       <group>
-        {/* frosted glass body */}
+        {/* frosted glass body: squat, heavy-walled jar */}
         <mesh position={[0, 0, 0]} castShadow receiveShadow>
-          <cylinderGeometry args={[1.05, 1.0, 1.35, 96, 1]} />
+          <cylinderGeometry args={[1.25, 1.18, 1.0, 96, 1]} />
           <meshPhysicalMaterial
-            color="#efe6d8"
-            roughness={0.42}
-            transmission={0.55}
-            thickness={1.1}
+            color="#f3ece1"
+            roughness={0.5}
+            transmission={0.45}
+            thickness={1.4}
             ior={1.45}
-            clearcoat={0.35}
-            clearcoatRoughness={0.3}
-            attenuationColor="#f5ecdd"
-            attenuationDistance={1.6}
+            clearcoat={0.3}
+            clearcoatRoughness={0.35}
+            attenuationColor="#f7efe2"
+            attenuationDistance={1.8}
           />
         </mesh>
         {/* cream fill visible through frosted glass */}
-        <mesh position={[0, 0.08, 0]}>
-          <cylinderGeometry args={[0.92, 0.9, 1.1, 64]} />
-          <meshStandardMaterial color="#f7f0e3" roughness={0.9} />
+        <mesh position={[0, 0.02, 0]}>
+          <cylinderGeometry args={[1.08, 1.04, 0.86, 64]} />
+          <meshStandardMaterial color="#faf4ea" roughness={0.95} />
         </mesh>
-        {/* base ring */}
-        <mesh position={[0, -0.7, 0]}>
-          <cylinderGeometry args={[1.0, 0.98, 0.06, 96]} />
-          <meshStandardMaterial color="#d9d2c6" roughness={0.35} metalness={0.15} />
+        {/* lacquered cream lid with a gentle dome */}
+        <mesh position={[0, 0.72, 0]} castShadow>
+          <cylinderGeometry args={[1.27, 1.27, 0.44, 96]} />
+          <meshPhysicalMaterial color="#efe8dc" roughness={0.18} clearcoat={1} clearcoatRoughness={0.08} />
         </mesh>
-        {/* polished lid */}
-        <mesh position={[0, 0.9, 0]} castShadow>
-          <cylinderGeometry args={[1.08, 1.08, 0.46, 96]} />
-          <meshStandardMaterial color="#e4e3df" roughness={0.12} metalness={0.95} />
+        {/* low dome: a wide sphere sunk so only its shallow crown rises above the lid */}
+        <mesh position={[0, 0.94 - 2.95, 0]} castShadow>
+          <sphereGeometry args={[3.2, 96, 32, 0, Math.PI * 2, 0, Math.PI * 0.13]} />
+          <meshPhysicalMaterial color="#efe8dc" roughness={0.18} clearcoat={1} clearcoatRoughness={0.08} />
         </mesh>
-        <mesh position={[0, 1.135, 0]}>
-          <cylinderGeometry args={[1.02, 1.08, 0.03, 96]} />
-          <meshStandardMaterial color="#f1f0ec" roughness={0.08} metalness={1} />
-        </mesh>
-        {/* engraved band */}
-        <mesh position={[0, 0.9, 0]}>
-          <torusGeometry args={[1.085, 0.012, 16, 128]} />
-          <meshStandardMaterial color="#b9b3a8" roughness={0.2} metalness={0.9} />
+        {/* slim champagne-gold seam between lid and body */}
+        <mesh position={[0, 0.5, 0]}>
+          <cylinderGeometry args={[1.275, 1.275, 0.035, 96]} />
+          <meshStandardMaterial color="#c9b58a" roughness={0.25} metalness={0.85} />
         </mesh>
       </group>
     </Center>
