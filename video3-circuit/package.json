@@ -1,0 +1,15 @@
+{
+  "name": "video3-circuit",
+  "version": "1.0.0",
+  "description": "Silent, educational 28 s Short (1080x1920, 30 fps, seamless loop).",
+  "main": "scene.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.169.0"
+  }
+}
