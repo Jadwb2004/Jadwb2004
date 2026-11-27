@@ -39,6 +39,22 @@ const EXAMPLES = [
 type PlanResponse = { spec: GameSpec; notes: string[]; provider: string; warning?: string; error?: string }
 type RedirectResponse = PlanResponse & { changes: string[]; lessons: VaultEntry['lessons'] }
 
+/** How the dashboard reaches the director. Default: the server's one connection. */
+export type DirectorClient = {
+  plan: (idea: string, memory: ReturnType<typeof buildMemory>) => Promise<PlanResponse>
+  redirect: (spec: GameSpec, notes: string, memory: ReturnType<typeof buildMemory>) => Promise<RedirectResponse>
+  status: () => Promise<string>
+}
+
+export const serverDirector: DirectorClient = {
+  plan: (idea, memory) => callDirector<PlanResponse>({ action: 'plan', idea, memory }),
+  redirect: (spec, notes, memory) => callDirector<RedirectResponse>({ action: 'redirect', spec, notes, memory }),
+  status: () =>
+    fetch('/api/director')
+      .then((r) => r.json())
+      .then((j) => j.provider as string),
+}
+
 async function callDirector<T>(body: unknown): Promise<T> {
   const res = await fetch('/api/director', {
     method: 'POST',
@@ -69,7 +85,14 @@ function diffSpecs(a: GameSpec, b: GameSpec, path = ''): string[] {
   return out
 }
 
-export function DirectorDashboard() {
+export function DirectorDashboard({
+  director = serverDirector,
+  canExport = true,
+}: {
+  director?: DirectorClient
+  /** Embedded viewers can block file downloads; hide Export there. */
+  canExport?: boolean
+}) {
   const [entries, setEntries] = useState<VaultEntry[]>([])
   const [loaded, setLoaded] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -79,16 +102,19 @@ export function DirectorDashboard() {
   const [busy, setBusy] = useState<string | null>(null)
   const [provider, setProvider] = useState<string>('…')
   const [vaultOpen, setVaultOpen] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
   const threadEnd = useRef<HTMLDivElement>(null)
   const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setEntries(loadVault())
     setLoaded(true)
-    fetch('/api/director')
-      .then((r) => r.json())
-      .then((j) => setProvider(j.provider))
+    director
+      .status()
+      .then(setProvider)
       .catch(() => setProvider('local'))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -118,7 +144,7 @@ export function DirectorDashboard() {
   async function submitIdea(idea: string) {
     setBusy('Directing your game — writing the plan…')
     try {
-      const r = await callDirector<PlanResponse>({ action: 'plan', idea, memory: buildMemory(entries) })
+      const r = await director.plan(idea, buildMemory(entries))
       const now = Date.now()
       const entry: VaultEntry = {
         id: uid(),
@@ -151,7 +177,7 @@ export function DirectorDashboard() {
       setTab('plan')
       setText('')
     } catch (e) {
-      alert(e instanceof Error ? e.message : String(e))
+      setNotice(`The director could not plan that: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setBusy(null)
     }
@@ -164,7 +190,7 @@ export function DirectorDashboard() {
     setText('')
     setBusy('Re-directing from your test notes…')
     try {
-      const r = await callDirector<RedirectResponse>({ action: 'redirect', spec: current.spec, notes, memory: buildMemory(entries) })
+      const r = await director.redirect(current.spec, notes, buildMemory(entries))
       const v = current.v + 1
       update(id, (e) => ({
         ...e,
@@ -232,14 +258,18 @@ export function DirectorDashboard() {
       const fresh = data.filter((e) => e && e.id && Array.isArray(e.versions) && !known.has(e.id))
       fresh.forEach((e) => e.versions.forEach((v) => (v.spec = sanitizeSpec(v.spec))))
       setEntries((all) => [...fresh, ...all])
-      alert(`Imported ${fresh.length} vault entr${fresh.length === 1 ? 'y' : 'ies'}.`)
+      setNotice(`Imported ${fresh.length} vault entr${fresh.length === 1 ? 'y' : 'ies'}.`)
     } catch (e) {
-      alert(`Could not import: ${e instanceof Error ? e.message : e}`)
+      setNotice(`Could not import that file: ${e instanceof Error ? e.message : e}. Choose a vault file made with Export.`)
     }
   }
 
   function remove(id: string) {
-    if (!confirm('Delete this game from the vault? This cannot be undone.')) return
+    if (pendingDelete !== id) {
+      setPendingDelete(id)
+      return
+    }
+    setPendingDelete(null)
     setEntries((all) => all.filter((e) => e.id !== id))
     if (activeId === id) setActiveId(null)
   }
@@ -292,19 +322,23 @@ export function DirectorDashboard() {
               </button>
               <button
                 onClick={() => remove(e.id)}
-                className="absolute right-2 top-2.5 rounded p-1 text-zinc-600 opacity-0 hover:text-red-400 group-hover:opacity-100 focus:opacity-100"
-                aria-label={`Delete ${s.title}`}
+                onBlur={() => setPendingDelete(null)}
+                className={cn(
+                  'absolute right-2 top-2.5 rounded p-1 text-zinc-600 opacity-0 hover:text-red-400 group-hover:opacity-100 focus:opacity-100',
+                  pendingDelete === e.id && 'bg-red-950 px-2 text-xs text-red-300 opacity-100',
+                )}
+                aria-label={pendingDelete === e.id ? `Confirm delete ${s.title}` : `Delete ${s.title}`}
               >
-                <Trash2 className="size-3.5" />
+                {pendingDelete === e.id ? 'Delete?' : <Trash2 className="size-3.5" />}
               </button>
             </li>
           )
         })}
       </ul>
       <div className="flex gap-2 border-t border-zinc-800 p-3">
-        <button onClick={exportVault} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100">
+        {canExport && <button onClick={exportVault} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100">
           <Download className="size-3.5" /> Export
-        </button>
+        </button>}
         <button onClick={() => importRef.current?.click()} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100">
           <Upload className="size-3.5" /> Import
         </button>
@@ -346,6 +380,14 @@ export function DirectorDashboard() {
           </span>
         </header>
 
+        {notice && (
+          <div role="status" className="flex items-center gap-3 border-b border-violet-900/60 bg-violet-950/40 px-4 py-2 text-sm text-violet-100">
+            <span className="flex-1">{notice}</span>
+            <button onClick={() => setNotice(null)} aria-label="Dismiss" className="rounded p-1 text-violet-300 hover:text-white">
+              <X className="size-4" />
+            </button>
+          </div>
+        )}
         {!active ? (
           <main className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-10">
             <div className="w-full max-w-2xl text-center">
